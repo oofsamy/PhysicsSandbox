@@ -12,7 +12,7 @@ protected:
 	bool m_Anchored;
 
 public:
-	PhysicsObject(float Mass, bool Anchored) : m_Mass(Mass), m_Anchored(Anchored) {};
+	PhysicsObject(float Mass, bool Anchored) : m_Mass(Mass), m_Position({ 0,0 }), m_Velocity({ 0,0 }), m_Force({ 0,0 }), m_Anchored(Anchored) {};
 
 public:
 	// Getters
@@ -33,10 +33,42 @@ public:
 	virtual void HandleClick(Vector2<float> MousePosition);
 	virtual void Update(float DeltaTime);
 	virtual void Render(sf::RenderWindow& Window);
+	virtual bool CheckCollision(PhysicsObject& OtherObject);
 
 	// Custom functions
 
 	void ApplyForce(Vector2<float> Force);
+
+};
+
+class RectangleObject : public PhysicsObject
+{
+protected:
+	Vector2<float> m_Size;
+	sf::Color m_Color;
+	sf::RectangleShape m_Shape;
+
+public:
+	RectangleObject(float Mass, bool Anchored, Vector2<float> Size, sf::Color Color) : m_Size(Size), m_Color(Color), PhysicsObject(Mass, Anchored)
+	{
+		this->m_Shape = sf::RectangleShape(reinterpret_cast<sf::Vector2f&>(Size));
+		this->m_Shape.setFillColor(Color);
+	}
+
+public:
+	//Getters
+	Vector2<float> GetSize() { return this->m_Size; }
+	sf::Color GetColor() { return this->m_Color; }
+
+	//Setters
+	void SetSize(Vector2<float> Size) { this->m_Size = Size; }
+	void SetColor(sf::Color Color) { this->m_Color = Color; }
+
+public:
+	void HandleClick(Vector2<float> MousePosition) override;
+	void Update(float DoubleTime) override;
+	void Render(sf::RenderWindow& Window) override;
+	bool CheckCollision(PhysicsObject& OtherObject) override;
 
 };
 
@@ -67,6 +99,14 @@ public:
 	void HandleClick(Vector2<float> MousePosition) override;
 	void Update(float DoubleTime) override;
 	void Render(sf::RenderWindow& Window) override;
+	bool CheckCollision(PhysicsObject& OtherObject) override;
+
+};
+
+class GraphicsObject
+{
+protected:
+	Vector2<float> m_Position;
 
 };
 
@@ -125,14 +165,22 @@ private:
 
 	void Update(float DeltaTime)
 	{
-		for (PhysicsObject* Object : this->m_Objects)
+		for (size_t i = 0; i < this->m_Objects.size(); i++)
 		{
-			if (Object->GetAnchored() == false)
+			if (this->m_Objects[i]->GetAnchored() == false)
 			{
-				Object->ApplyForce(this->m_Gravity * Object->GetMass()); // Apply gravity if unanchored
+				this->m_Objects[i]->ApplyForce(this->m_Gravity * this->m_Objects[i]->GetMass());
 			}
 
-			Object->Update(DeltaTime);
+			for (size_t j = i + 1; j < this->m_Objects.size(); j++)
+			{
+				if (this->m_Objects[i]->CheckCollision(*this->m_Objects[j]))
+				{
+
+				}
+			}
+
+			this->m_Objects[i]->Update(DeltaTime);
 		}
 	}
 
@@ -142,8 +190,6 @@ private:
 		
 		for (PhysicsObject* Object : this->m_Objects)
 		{
-			std::cout << "render object\n";
-
 			Object->Render(this->m_Window);
 		}
 

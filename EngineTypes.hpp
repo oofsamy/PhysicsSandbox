@@ -1,7 +1,7 @@
 #pragma once
 #include "Includes.hpp"
 
-#define GRAVITATIONAL_CONSTANT 9.81
+#define GRAVITATIONAL_CONSTANT (float)9.81
 
 template<typename VectorType>
 struct Vector2
@@ -65,5 +65,4 @@ public:
 		
 		return VectorType{ this->x / Magnitude, this->y / Magnitude };
 	}
-
 };
