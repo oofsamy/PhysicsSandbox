@@ -31,6 +31,21 @@ public:
 		return Vector2<VectorType>{this->x + Other.x, this->y + Other.y};
 	}
 
+	inline Vector2<VectorType> operator + (const VectorType Other)
+	{
+		return Vector2<VectorType>{this->x + Other, this->y + Other};
+	}
+
+	inline Vector2<VectorType> operator - (const Vector2<VectorType>& Other)
+	{
+		return Vector2<VectorType>{this->x - Other.x, this->y - Other.y};
+	}
+
+	inline Vector2<VectorType> operator - (const VectorType Other)
+	{
+		return Vector2<VectorType>{this->x - Other, this->y - Other};
+	}
+
 	inline Vector2<VectorType> operator * (const Vector2<VectorType>& Other)
 	{
 		return Vector2<VectorType>{this->x * Other.x, this->y * Other.y};
@@ -64,5 +79,10 @@ public:
 		float Magnitude = this->GetMagnitude();
 		
 		return VectorType{ this->x / Magnitude, this->y / Magnitude };
+	}
+
+	static VectorType DotProduct(Vector2<VectorType> VectorA, Vector2<VectorType> VectorB)
+	{
+		return (VectorA.x + VectorB.x + VectorA.y + VectorB.y);
 	}
 };

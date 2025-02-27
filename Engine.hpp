@@ -33,7 +33,8 @@ public:
 	virtual void HandleClick(Vector2<float> MousePosition);
 	virtual void Update(float DeltaTime);
 	virtual void Render(sf::RenderWindow& Window);
-	virtual bool CheckCollision(PhysicsObject& OtherObject);
+	virtual bool CheckCollision(PhysicsObject& OtherObject) = 0;
+	virtual void ResolveCollision(PhysicsObject& OtherObject) = 0;
 
 	// Custom functions
 
@@ -69,6 +70,7 @@ public:
 	void Update(float DoubleTime) override;
 	void Render(sf::RenderWindow& Window) override;
 	bool CheckCollision(PhysicsObject& OtherObject) override;
+	void ResolveCollision(PhysicsObject& OtherObject) override;
 
 };
 
@@ -100,7 +102,7 @@ public:
 	void Update(float DoubleTime) override;
 	void Render(sf::RenderWindow& Window) override;
 	bool CheckCollision(PhysicsObject& OtherObject) override;
-
+	void ResolveCollision(PhysicsObject& OtherObject) override;
 };
 
 class GraphicsObject
@@ -169,14 +171,14 @@ private:
 		{
 			if (this->m_Objects[i]->GetAnchored() == false)
 			{
-				this->m_Objects[i]->ApplyForce(this->m_Gravity * this->m_Objects[i]->GetMass());
+				//this->m_Objects[i]->ApplyForce(this->m_Gravity * this->m_Objects[i]->GetMass());
 			}
 
 			for (size_t j = i + 1; j < this->m_Objects.size(); j++)
 			{
 				if (this->m_Objects[i]->CheckCollision(*this->m_Objects[j]))
 				{
-
+					this->m_Objects[i]->ResolveCollision(*this->m_Objects[j]);
 				}
 			}
 
